@@ -49,7 +49,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Suitsupply.Desktop.Client\Desktop.Client.csproj">
+    <ProjectReference Include="..\Desktop.Client\Desktop.Client.csproj">
       <Project>{73f0710e-4c97-4464-a9a2-63c1bd188a7f}</Project>
       <Name>Desktop.Client</Name>
     </ProjectReference>

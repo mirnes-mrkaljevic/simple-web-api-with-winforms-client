@@ -62,7 +62,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Suitsupply.WebAPI\WebAPI.csproj">
+    <ProjectReference Include="..\WebAPI\WebAPI.csproj">
       <Project>{f1b033f4-e7c1-4c7a-bd8c-d33b732ccb19}</Project>
       <Name>WebAPI</Name>
     </ProjectReference>
