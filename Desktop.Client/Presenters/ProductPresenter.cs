@@ -1,4 +1,5 @@
-﻿using Desktop.Client.Models;
+﻿using Desktop.Client.DBAccess;
+using Desktop.Client.Models;
 using Desktop.Client.View;
 using Desktop.Client.Views;
 using System;
@@ -15,14 +16,14 @@ namespace Desktop.Client.Presenters
     public class ProductPresenter
     {
         private IProductView view;
-        private IRequestService requestService;
+        private IProductDataAccess dataAccesService;
 
         private Product selectedProduct = new Product();
 
-        public ProductPresenter(IProductView view, IRequestService requestService)
+        public ProductPresenter(IProductView view, IProductDataAccess dataAccesService)
         {
             this.view = view;
-            this.requestService = requestService;
+            this.dataAccesService = dataAccesService;
             SubsribeToViewEvents();
         }
 
@@ -35,19 +36,18 @@ namespace Desktop.Client.Presenters
             view.DeleteProduct += View_DeleteProduct;
         }
 
-        private async void View_DeleteProduct(object sender, int productId)
+        private void View_DeleteProduct(object sender, int productId)
         {
-
-            if(!await requestService.DeleteProductAsync(productId))
+            if(dataAccesService.DeleteProduct(productId))
             {
-                view.ShowMessage(requestService.ResponseMessage);
+                view.ShowMessage(dataAccesService.ErrorMessage);
                 return;
             }
            
             ReloadData();
         }
 
-        private async void View_ModifyProduct(object sender, ProductViewModel viewModel)
+        private void View_ModifyProduct(object sender, ProductViewModel viewModel)
         {
             Validator validator = new Validator();
             string validationMessage = string.Empty;
@@ -59,9 +59,9 @@ namespace Desktop.Client.Presenters
 
             PopulateProductFromViewModel(selectedProduct, viewModel);
            
-            if (!await requestService.EditProductAsync(selectedProduct))
+            if (!dataAccesService.EditProduct(selectedProduct.Id, selectedProduct))
             {
-                view.ShowMessage(requestService.ResponseMessage);
+                view.ShowMessage(dataAccesService.ErrorMessage);
                 return;
             }
 
@@ -79,15 +79,9 @@ namespace Desktop.Client.Presenters
             ReloadData();
         }
 
-        private async void ReloadData()
+        private void ReloadData()
         {
-            IList<Product> products = await requestService.GetAllProductsAsync();
-
-            if (products == null)
-            {
-                view.ShowMessage(requestService.ResponseMessage);
-                return;
-            }
+            IList<Product> products = dataAccesService.GetAllProducts();
 
             view.PopulateDataGridView(products);
         }
@@ -109,11 +103,11 @@ namespace Desktop.Client.Presenters
           
         }
 
-        private async void AddNewProductAsync(Product product)
+        private void AddNewProductAsync(Product product)
         {
-            if (!await requestService.AddNewProductAsync(product))
+            if (!dataAccesService.AddProduct(product))
             {
-                view.ShowMessage(requestService.ResponseMessage);
+                view.ShowMessage(dataAccesService.ErrorMessage);
                 return;
             }
             ReloadData();

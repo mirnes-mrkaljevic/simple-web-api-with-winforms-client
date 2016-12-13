@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Desktop.Client.DBAccess;
 
 namespace Desktop.Client.Tests.Presenters
 {
@@ -15,11 +16,11 @@ namespace Desktop.Client.Tests.Presenters
     public class ProductPresenterTests
     {
         [Test]
-        public void ExpectToCallAddNewProductOnAppropriateEventReceived()
+        public void ExpectToCallAddProductOnAppropriateEventReceived()
         {
             IProductView view = Substitute.For<IProductView>();
-            IRequestService requestService = Substitute.For<IRequestService>();
-            ProductPresenter presenter = new ProductPresenter(view, requestService);
+            IProductDataAccess dataAccess = Substitute.For<IProductDataAccess>();
+            ProductPresenter presenter = new ProductPresenter(view, dataAccess);
            
             ProductViewModel viewModel = new ProductViewModel()
             {
@@ -28,10 +29,7 @@ namespace Desktop.Client.Tests.Presenters
             };
            
             view.AddNewProduct += Raise.Event<EventHandler<ProductViewModel>>(view, viewModel);
-            Received.InOrder(async () =>
-            {
-                await requestService.Received().AddNewProductAsync(Arg.Is<Product>(x=>x.Price == 2 && x.Name == "Test"));
-            });
+            dataAccess.Received().AddProduct(Arg.Is<Product>(x=>x.Price == 2 && x.Name == "Test"));
 
         }
 
@@ -39,8 +37,8 @@ namespace Desktop.Client.Tests.Presenters
         public void ExpectToCallEditProductOnAppropriateEventReceived()
         {
             IProductView view = Substitute.For<IProductView>();
-            IRequestService requestService = Substitute.For<IRequestService>();
-            ProductPresenter presenter = new ProductPresenter(view, requestService);
+            IProductDataAccess dataAccess = Substitute.For<IProductDataAccess>();
+            ProductPresenter presenter = new ProductPresenter(view, dataAccess);
 
             ProductViewModel viewModel = new ProductViewModel()
             {
@@ -49,10 +47,7 @@ namespace Desktop.Client.Tests.Presenters
             };
 
             view.ModifyProduct += Raise.Event<EventHandler<ProductViewModel>>(view, viewModel);
-            Received.InOrder(async () =>
-            {
-                await requestService.Received().EditProductAsync(Arg.Is<Product>(x => x.Price == 2 && x.Name == "Test"));
-            });
+            dataAccess.Received().EditProduct(Arg.Any<int>(), Arg.Is<Product>(x => x.Price == 2 && x.Name == "Test"));
 
         }
 
@@ -60,30 +55,27 @@ namespace Desktop.Client.Tests.Presenters
         public void ExpectToCallDeleteProductOnAppropriateEventReceived()
         {
             IProductView view = Substitute.For<IProductView>();
-            IRequestService requestService = Substitute.For<IRequestService>();
-            ProductPresenter presenter = new ProductPresenter(view, requestService);
+            IProductDataAccess dataAccess = Substitute.For<IProductDataAccess>();
+            ProductPresenter presenter = new ProductPresenter(view, dataAccess);
 
   
 
             view.DeleteProduct += Raise.Event<EventHandler<int>>(view, 2);
-            Received.InOrder(async () =>
-            {
-                await requestService.Received().DeleteProductAsync(2);
-            });
+          
+            dataAccess.Received().DeleteProduct(2);
+    
         }
 
         [Test]
-        public void ExpectToCallGetAllProductOnAppropriateEventReceived()
+        public void ExpectToCallGetAllProductsOnAppropriateEventReceived()
         {
             IProductView view = Substitute.For<IProductView>();
-            IRequestService requestService = Substitute.For<IRequestService>();
-            ProductPresenter presenter = new ProductPresenter(view, requestService);
+            IProductDataAccess dataAccess = Substitute.For<IProductDataAccess>();
+            ProductPresenter presenter = new ProductPresenter(view, dataAccess);
 
             view.ViewLoad += Raise.EventWith(view, new EventArgs());
-            Received.InOrder(async () =>
-            {
-                await requestService.Received().GetAllProductsAsync();
-            });
+             dataAccess.Received().GetAllProducts();
+           
         }
 
 

@@ -1,4 +1,5 @@
-﻿using Desktop.Client.Models;
+﻿using Desktop.Client.DBAccess;
+using Desktop.Client.Models;
 using Desktop.Client.Presenters;
 using Desktop.Client.Views;
 using System;
@@ -32,7 +33,7 @@ namespace Desktop.Client.View
         public Products()
         {
             InitializeComponent();
-            productPresenter = new ProductPresenter(this, new RequestService());
+            productPresenter = new ProductPresenter(this, new ProductDataAccess());
             this.Load += ViewLoad;
             this.btnAddNew.Click += BtnAddNew_Click;
             this.btnSave.Click += BtnSave_Click;
